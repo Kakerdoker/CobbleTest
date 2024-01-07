@@ -39,7 +39,7 @@ public class Input_Manager : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
             MovePlayersOnFloorHit();
 
-        if (Input.GetButtonDown("space"))
+        if (Input.GetKeyDown("space"))
             playerManager.AddPlayer();
     }
 }

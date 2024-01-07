@@ -5,8 +5,10 @@ using UnityEngine;
 public class Player_Manager : MonoBehaviour
 {
     /// <summary>Represents the currently selected <c>player</c> as the next leader.
-    /// <br/>Will probably be moved to Canvas Manager once I make it.</summary>
-    [HideInInspector] public Player selectedPlayer;
+    /// <br/>Will probably be moved to Canvas Manager once I make it.
+    /// </summary>
+    /// <remarks>Can only be changed via Inspector right now!!</remarks>
+    public Player selectedPlayer;
     /// <summary>Stores <c>Player scripts</c> in their moving order, with index 0 being first in line.</summary>
     [HideInInspector] public List<Player> playerOrder { get; private set; }
     /// <summary>Stores <c>Player scripts</c> in an unchanging (unless deleted) order.</summary>
@@ -24,7 +26,6 @@ public class Player_Manager : MonoBehaviour
         //Change and update player order only if there is a new leader.
         if (playerOrder[0] != selectedPlayer)
         {
-            
             ChangePlayerOrder(selectedPlayer);
             UpdatePlayersFollowStatus();
         }
@@ -41,6 +42,7 @@ public class Player_Manager : MonoBehaviour
         GameObject playerInstance = HandleNewPlayerInstance();
         HandlePlayerLists(playerInstance);
         UpdatePlayersFollowStatus();
+        selectedPlayer = playerOrder[0];
     }
 
     /// <summary>
@@ -50,8 +52,8 @@ public class Player_Manager : MonoBehaviour
     {
         GameObject playerInstance = Instantiate(playerObject);
         playerInstance.name = "player " + playerOrder.Count;
-        playerInstance.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f) * playerOrder.Count;
-        playerInstance.transform.parent = gameObject.transform.parent;
+        playerInstance.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f) * (playerOrder.Count+1);
+        playerInstance.transform.parent = gameObject.transform;
 
         return playerInstance;
     }
