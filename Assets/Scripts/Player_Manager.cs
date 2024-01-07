@@ -116,23 +116,4 @@ public class Player_Manager : MonoBehaviour
         playerList = new List<Player>();
     }
 
-    //Temporary methods and variables to test functionality.
-    public int newLeaderIndex;
-    void Update()
-    {
-        if (playerOrder.Count > 0)
-            selectedPlayer = playerList[newLeaderIndex];
-
-        if (Input.GetKeyDown("w"))
-            MovePlayers(playerOrder[0].transform.position + new Vector3(0, 0, 1f));
-        else if (Input.GetKeyDown("s"))
-            MovePlayers(playerOrder[0].transform.position + new Vector3(0, 0, -1f));
-        else if (Input.GetKeyDown("a"))
-            MovePlayers(playerOrder[0].transform.position + new Vector3(-1f,0, 0));
-        else if (Input.GetKeyDown("d"))
-            MovePlayers(playerOrder[0].transform.position + new Vector3(1f, 0, 0));
-        else if (Input.GetKeyDown("space"))
-            AddPlayer();
-
-    }
 }
