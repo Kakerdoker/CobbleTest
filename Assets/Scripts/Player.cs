@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     /// </summary>
     private void SetDestination()
     {
-        if (isFollowing)
+        if (isFollowing && followingPlayer != null)
         {
             destinationVector = followingPlayer.transform.position;
             agent.stoppingDistance = followingPlayer.transform.localScale.x+0.5f;//Make the stopping distance the size of their followee + some margin.

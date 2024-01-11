@@ -4,15 +4,12 @@ using UnityEngine;
 
 public class Player_Manager : MonoBehaviour
 {
-    /// <summary>Represents the currently selected <c>player</c> as the next leader.
-    /// <br/>Will probably be moved to Canvas Manager once I make it.
-    /// </summary>
-    /// <remarks>Can only be changed via Inspector right now!!</remarks>
-    public Player selectedPlayer;
     /// <summary>Stores <c>Player scripts</c> in their moving order, with index 0 being first in line.</summary>
-    [HideInInspector] public List<Player> playerOrder { get; private set; }
+    public List<Player> playerOrder { get; private set; }
     /// <summary>Stores <c>Player scripts</c> in an unchanging (unless deleted) order.</summary>
     private List<Player> playerList;
+
+    public UI_Manager uiManager;
 
 
     /// <summary>
@@ -24,9 +21,9 @@ public class Player_Manager : MonoBehaviour
         if (playerOrder.Count == 0)
             return;
         //Change and update player order only if there is a new leader.
-        if (playerOrder[0] != selectedPlayer)
+        if (playerOrder[0] != uiManager.selectedPlayer)
         {
-            ChangePlayerOrder(selectedPlayer);
+            ChangePlayerOrder(uiManager.selectedPlayer);
             UpdatePlayersFollowStatus();
         }
         //Always change leaders destination.
@@ -42,7 +39,7 @@ public class Player_Manager : MonoBehaviour
         GameObject playerInstance = HandleNewPlayerInstance();
         HandlePlayerLists(playerInstance);
         UpdatePlayersFollowStatus();
-        selectedPlayer = playerOrder[0];
+        uiManager.AddButton(playerOrder[playerOrder.Count - 1]);
     }
 
     /// <summary>
@@ -51,7 +48,7 @@ public class Player_Manager : MonoBehaviour
     private GameObject HandleNewPlayerInstance()
     {
         GameObject playerInstance = Instantiate(playerObject);
-        playerInstance.name = "player " + playerOrder.Count;
+        playerInstance.name = "Player " + (playerOrder.Count+1);
         playerInstance.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f) * (playerOrder.Count+1);
         playerInstance.transform.parent = gameObject.transform;
 
@@ -66,6 +63,8 @@ public class Player_Manager : MonoBehaviour
         Player playerScript = playerInstance.GetComponent<Player>();
         playerOrder.Add(playerScript);
         playerList.Add(playerScript);
+        if (playerList.Count == 1)
+            uiManager.ChangeSelectedPlayer(playerScript);
     }
 
 
@@ -79,9 +78,11 @@ public class Player_Manager : MonoBehaviour
         int leaderIndex = playerOrder.IndexOf(leader);
         List<Player> newPlayerOrder = new List<Player>{ leader };
 
+
         for(int i = leaderIndex + 1; i < playerOrder.Count; i++)
         {
             newPlayerOrder.Add(playerOrder[i]);
+
         }
         for (int i = leaderIndex - 1; i >= 0; i--)
         {
@@ -103,7 +104,7 @@ public class Player_Manager : MonoBehaviour
     /// Sets the <c>isFollowing</c> flag to true and changes <c>followingPlayer</c> to whoever is in front of them in the <c>playerQueue</c>.<br/>
     /// Does this to everyone in <c>playerQueue</c> except the leader who is at index 0.
     /// </summary>
-    private void UpdatePlayersFollowStatus()
+    public void UpdatePlayersFollowStatus()
     {
         for(int i = 1; i < playerOrder.Count; i++)
         {
@@ -111,6 +112,7 @@ public class Player_Manager : MonoBehaviour
             playerOrder[i].followingPlayer = playerOrder[i - 1];
         }
     }
+
 
     void Start()
     {

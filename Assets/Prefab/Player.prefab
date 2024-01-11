@@ -124,7 +124,7 @@ MonoBehaviour:
   resistance: 0
   isFollowing: 0
   followingPlayer: {fileID: 0}
-  destinationVector: {x: 0, y: 0, z: 0}
+  destinationVector: {x: 1.326064, y: -4.333023e-17, z: 7.8056793}
 --- !u!195 &-8766686916265417286
 NavMeshAgent:
   m_ObjectHideFlags: 0
