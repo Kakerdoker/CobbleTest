@@ -41,6 +41,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+
         SetDestination();
         Move();
     }

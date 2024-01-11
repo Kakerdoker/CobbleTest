@@ -68,7 +68,7 @@ public class Input_Manager : MonoBehaviour
             MovePlayersOnFloorHit();
 
         if (Input.GetKeyDown("space"))
-            playerManager.AddPlayer();
+            playerManager.AddNewPlayer();
     }
 
 

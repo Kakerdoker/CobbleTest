@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class Player_Manager : MonoBehaviour
 {
-    /// <summary>Stores <c>Player scripts</c> in their moving order, with index 0 being first in line.</summary>
-    public List<Player> playerOrder { get; private set; }
-    /// <summary>Stores <c>Player scripts</c> in an unchanging (unless deleted) order.</summary>
-    private List<Player> playerList;
+    [Header("Manager Script References")]
+    [SerializeField] UI_Manager uiManager;
 
-    public UI_Manager uiManager;
+    [Header("Prefabs")]
+    [SerializeField] GameObject playerPrefab;
+
+    /// <summary>Stores <c>Player scripts</c> in their moving order, with index 0 being first in line.</summary>
+    List<Player> playerOrder;
+    /// <summary>Stores <c>Player scripts</c> in an unchanging (unless deleted) order.</summary>
+    List<Player> playerList;
 
 
     /// <summary>
@@ -30,16 +34,26 @@ public class Player_Manager : MonoBehaviour
         ChangeLeaderDestination(destination);
     }
 
-    public GameObject playerObject;
     /// <summary>
-    /// Adds a new player GameObject to the world.
+    /// Creates and adds a new player <c>GameObject</c> to the world and the <c>Player_Manager</c>.
     /// </summary>
-    public void AddPlayer()
+    public void AddNewPlayer()
     {
         GameObject playerInstance = HandleNewPlayerInstance();
-        HandlePlayerLists(playerInstance);
+        Player playerScript = HandlePlayerLists(playerInstance);
         UpdatePlayersFollowStatus();
-        uiManager.AddButton(playerOrder[playerOrder.Count - 1]);
+        uiManager.AddButton(playerScript);
+    }
+
+    /// <summary>
+    /// Adds an existing player <c>GameObject</c> to the <c>Player_Manager</c>.
+    /// </summary>
+    private void AddExistingPlayer(GameObject playerObject)
+    {
+        playerObject.name = MakePlayerName();
+        Player playerScript = HandlePlayerLists(playerObject);
+        UpdatePlayersFollowStatus();
+        uiManager.AddButton(playerScript);
     }
 
     /// <summary>
@@ -47,8 +61,8 @@ public class Player_Manager : MonoBehaviour
     /// </summary>
     private GameObject HandleNewPlayerInstance()
     {
-        GameObject playerInstance = Instantiate(playerObject);
-        playerInstance.name = "Player " + (playerOrder.Count+1);
+        GameObject playerInstance = Instantiate(playerPrefab);
+        playerInstance.name = MakePlayerName();
         playerInstance.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f) * (playerOrder.Count+1);
         playerInstance.transform.parent = gameObject.transform;
 
@@ -56,15 +70,32 @@ public class Player_Manager : MonoBehaviour
     }
 
     /// <summary>
-    /// Adds a new playerScript to lists containing them.
+    /// Returns a new player name.<br/>
+    /// Made as a seperate method to make sure every part of the code uses the same naming convention.
     /// </summary>
-    private void HandlePlayerLists(GameObject playerInstance)
+    /// <returns></returns>
+    private string MakePlayerName()
+    {
+        return "Player " + (playerOrder.Count + 1);
+    }
+
+    /// <summary>
+    /// Adds a new playerScript to lists containing them.<br/>
+    /// Returns <c>Player</c> script of the <c>playerInstance</c> <c>gameObject</c>.
+    /// </summary>
+    private Player HandlePlayerLists(GameObject playerInstance)
     {
         Player playerScript = playerInstance.GetComponent<Player>();
         playerOrder.Add(playerScript);
         playerList.Add(playerScript);
+
+        //If the current player is the first one then make them the leader and change their destination to their location.
         if (playerList.Count == 1)
+        {
             uiManager.ChangeSelectedPlayer(playerScript);
+            playerScript.destinationVector = playerScript.transform.position;
+        }
+        return playerScript;
     }
 
 
@@ -113,11 +144,27 @@ public class Player_Manager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Adds <c>Players</c> added as part of the scene to the <c>Player_Manager</c>.<br/>
+    /// The <c>Players</c> have to be children of the Object holding this script.
+    /// </summary>
+    private void CheckForAlreadyExistingPlayers()
+    {
+        int childAmount = gameObject.transform.childCount;
+        for(int i = 0; i < childAmount; i++)
+        {
+            GameObject possiblePlayerObject = gameObject.transform.GetChild(i).gameObject;
+            if (possiblePlayerObject.GetComponent<Player>() != null)
+                AddExistingPlayer(possiblePlayerObject);
+        }
+    }
+
 
     void Start()
     {
         playerOrder = new List<Player>();
         playerList = new List<Player>();
+        CheckForAlreadyExistingPlayers();
     }
 
 }
