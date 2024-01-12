@@ -9,7 +9,10 @@ public class UI_Manager : MonoBehaviour
     [Header("Miscellaneous References")]
     [SerializeField] GameObject canvas;
     [SerializeField] RectTransform canvasTransform;
+
+    [Header("Prefab References")]
     [SerializeField] GameObject buttonPrefab;
+    [SerializeField] GameObject statsboxPrefab;
 
     [Header("Button Box Properties")]
     [Tooltip("Size delta of the buttons in the box.")] [SerializeField] Vector2 buttonSize;
@@ -23,6 +26,10 @@ public class UI_Manager : MonoBehaviour
     [HideInInspector] public Player selectedPlayer { get; private set; }
     /// <summary>Stores all of the buttons shown on the Canvas.</summary>
     List<UI_Button> buttonList;
+    /// <summary>Stores all of the statsboxes shown on the Canvas.</summary>
+    List<UI_Statsbox> statsboxList;
+
+
 
     /// <summary>
     /// Places all of the buttons found inside of <c>buttonList</c> in their desired position on the Canvas.
@@ -83,6 +90,37 @@ public class UI_Manager : MonoBehaviour
     }
 
     /// <summary>
+    /// Changes the scale of every <c>statsbox</c> so it won't be unnaturally large or small for the Canvas.
+    /// </summary>
+    public void ResizeStatsboxes()
+    {
+        if (statsboxList == null || statsboxList.Count == 0)
+            return;
+
+        float scale = CalculateStatsScale();
+        for(int i = 0; i < statsboxList.Count; i++)
+        {
+            statsboxList[i].gameObject.transform.localScale = new Vector2(scale, scale);
+        }
+    }
+
+    /// <summary>
+    /// Adds a new <c>statsbox</c> used for displaying stats of a <c>Player</c>.
+    /// </summary>
+    public UI_Statsbox AddStatsbox()
+    {
+        GameObject statsboxObject = Instantiate(statsboxPrefab);
+
+        statsboxObject.transform.parent = canvasTransform;
+
+        UI_Statsbox statsboxScript = statsboxObject.GetComponent<UI_Statsbox>();
+        statsboxList.Add(statsboxScript);
+        statsboxScript.Init();
+
+        return statsboxScript;
+    }
+
+    /// <summary>
     /// Instantiates and initializes a new <c>Button</c>.
     /// </summary>
     private void HandleNewButtonInstance(Player playerScript)
@@ -95,6 +133,20 @@ public class UI_Manager : MonoBehaviour
         UI_Button buttonScript = buttonInstance.GetComponent<UI_Button>();
         buttonScript.Init(playerScript);
         buttonList.Add(buttonScript);
+    }
+
+    /// <summary>
+    /// Returns the desired scale of <c>statsboxes</c>.
+    /// </summary>
+    private float CalculateStatsScale()
+    {
+        float shorterAxis;
+        if (canvasTransform.sizeDelta.x < canvasTransform.sizeDelta.y)
+            shorterAxis = canvasTransform.sizeDelta.x;
+        else
+            shorterAxis = canvasTransform.sizeDelta.y;
+
+        return shorterAxis / 500f;
     }
 
     /// <summary>
@@ -172,6 +224,7 @@ public class UI_Manager : MonoBehaviour
 
     void Start()
     {
+        statsboxList = new List<UI_Statsbox>();
         buttonList = new List<UI_Button>();
     }
 

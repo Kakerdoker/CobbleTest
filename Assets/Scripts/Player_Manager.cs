@@ -41,6 +41,7 @@ public class Player_Manager : MonoBehaviour
     {
         GameObject playerInstance = HandleNewPlayerInstance();
         Player playerScript = HandlePlayerLists(playerInstance);
+        playerScript.statsbox = uiManager.AddStatsbox();
         UpdatePlayersFollowStatus();
         uiManager.AddButton(playerScript);
     }
@@ -52,6 +53,7 @@ public class Player_Manager : MonoBehaviour
     {
         playerObject.name = MakePlayerName();
         Player playerScript = HandlePlayerLists(playerObject);
+        playerScript.statsbox = uiManager.AddStatsbox();
         UpdatePlayersFollowStatus();
         uiManager.AddButton(playerScript);
     }

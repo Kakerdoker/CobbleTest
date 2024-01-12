@@ -3,12 +3,39 @@ using UnityEngine.AI;
 
 public class Player : MonoBehaviour
 {
-    public int speed, agility, resistance;
+    [HideInInspector] int speed, agility, resistance;
     [HideInInspector] public bool isFollowing;
     [HideInInspector] public Player followingPlayer;
     [HideInInspector] public Vector3 destinationVector;
+    [HideInInspector] public UI_Statsbox statsbox;
+
     NavMeshAgent agent;
 
+    /// <summary>
+    /// Disables the <c>Player</c>'s <c>statsbox</c>.
+    /// </summary>
+    public void HideStatsbox()
+    {
+        statsbox.Disable();
+    }
+
+    /// <summary>
+    /// Enables the <c>Player</c>'s <c>statsbox</c> with updated stats.
+    /// </summary>
+    public void ShowStatsbox()
+    {
+        statsbox.UpdateBox(speed, agility, resistance, gameObject.name);
+        statsbox.Enable();
+    }
+
+    /// <summary>
+    /// Changes <c>Player</c>'s <c>statsbox</c> position to the given <c>mousePosition</c>.
+    /// </summary>
+    public void UpdateStatsboxPosition(Vector2 mousePosition)
+    {
+        statsbox.gameObject.transform.position = mousePosition;
+    }
+    
     /// <summary>
     /// Temporary method<br/>
     /// Moves the player's <c>gameObject</c> to his <c>destinationVector</c>.
@@ -41,7 +68,6 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-
         SetDestination();
         Move();
     }

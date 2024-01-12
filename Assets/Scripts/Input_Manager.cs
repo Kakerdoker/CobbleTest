@@ -14,8 +14,45 @@ public class Input_Manager : MonoBehaviour
     [SerializeField] GraphicRaycaster raycaster;
     [SerializeField] EventSystem eventSystem;
 
+    /// <summary><c>Player</c> hovered over in last frame.</summary>
+    Player lastFramePlayerScript = null;
+
     //Layers
     private const int floor = 1 << 8;
+    private const int player = 1 << 9;
+
+
+    /// <summary>
+    /// Shows <c>Statsbox</c> of the currently hovered over <c>Player</c>.
+    /// </summary>
+    private void ShowStatsOnPlayerHover()
+    {
+        GameObject playerObject = GetHitPlayerObject();
+        Player playerScript = playerObject?.GetComponent<Player>();
+
+        //If there is a change in what the mouse is hovering over, then show the new and hide the old.
+        if (playerScript != lastFramePlayerScript)
+        {
+            playerScript?.ShowStatsbox();
+            lastFramePlayerScript?.HideStatsbox();
+            lastFramePlayerScript = playerScript;
+        }
+
+        playerScript?.UpdateStatsboxPosition(Input.mousePosition);
+    }
+
+    /// <summary>
+    /// Returns a <c>Player</c> <c>GameObject</c> if a raycast from the camera to the cursor hit any.
+    /// </summary>
+    private GameObject GetHitPlayerObject()
+    {
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, 500f, player))
+        {
+            return hit.transform.gameObject;
+        }
+        return null;
+    }
 
     /// <summary>
     /// Returns true if mouse clicked on a UI component.
@@ -39,12 +76,9 @@ public class Input_Manager : MonoBehaviour
     /// </summary>
     private bool GetFloorHitPositionFromCamera(out Vector3 position)
     {
-        RaycastHit hit;
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray.origin, ray.direction, out hit, 500f, floor))
+        if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, 500f, floor))
         {
-  
-
             position = hit.point;
             return true;
         }
@@ -57,8 +91,7 @@ public class Input_Manager : MonoBehaviour
     /// </summary>
     private void MovePlayersOnFloorHit()
     {
-        Vector3 floorClick;
-        if (GetFloorHitPositionFromCamera(out floorClick) && !GetUIHit())
+        if (GetFloorHitPositionFromCamera(out Vector3 floorClick) && !GetUIHit())
             playerManager.MovePlayers(floorClick);
     }
     
@@ -69,6 +102,8 @@ public class Input_Manager : MonoBehaviour
 
         if (Input.GetKeyDown("space"))
             playerManager.AddNewPlayer();
+
+        ShowStatsOnPlayerHover();
     }
 
 
