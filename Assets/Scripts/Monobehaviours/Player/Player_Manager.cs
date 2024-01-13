@@ -70,7 +70,7 @@ public class Player_Manager : MonoBehaviour
     /// </summary>
     private string MakePlayerName()
     {
-        return "Player " + (playerOrder.Count + 1);
+        return "Player " + playerOrder.Count;
     }
 
     /// <summary>
