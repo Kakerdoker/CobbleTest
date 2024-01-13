@@ -578,14 +578,9 @@ MonoBehaviour:
   playerManager: {fileID: 530556433}
   canvas: {fileID: 1173440053}
   canvasTransform: {fileID: 1173440057}
+  buttonBox: {fileID: 11400000, guid: 050fcf6b8f242af4e90cea5f68ef1536, type: 2}
   buttonPrefab: {fileID: 2505702683977991761, guid: fa8682537e6fbc349aab95c822b9360e, type: 3}
   statsboxPrefab: {fileID: 4385835273700435707, guid: abd776d3c0bf4394288eeed7459981f5, type: 3}
-  buttonSize: {x: 180, y: 60}
-  outerMargin: {x: 10, y: 10}
-  buttonMargin: {x: 5, y: 5}
-  cornerOffset: {x: 0, y: 0}
-  ratio: 3
-  boxWidthPercent: 1
 --- !u!4 &1142951661
 Transform:
   m_ObjectHideFlags: 0
