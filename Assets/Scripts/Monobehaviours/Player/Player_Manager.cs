@@ -51,7 +51,9 @@ public class Player_Manager : MonoBehaviour
     /// </summary>
     private void AddExistingPlayer(GameObject playerObject)
     {
+        ChangePlayerColor(playerObject);
         playerObject.name = MakePlayerName();
+
         Player playerScript = HandlePlayerLists(playerObject);
         playerScript.statsbox = uiManager.AddStatsbox();
         UpdatePlayersFollowStatus();
@@ -64,11 +66,22 @@ public class Player_Manager : MonoBehaviour
     private GameObject HandleNewPlayerInstance()
     {
         GameObject playerInstance = Instantiate(playerPrefab);
+        ChangePlayerColor(playerInstance);
+
         playerInstance.name = MakePlayerName();
-        playerInstance.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f) * (playerOrder.Count+1);
         playerInstance.transform.parent = gameObject.transform;
 
         return playerInstance;
+    }
+
+    /// <summary>
+    /// Changes the given <c>GameObjects's</c> <c>Renderer's color</c> to a random value.
+    /// </summary>
+    private void ChangePlayerColor(GameObject playerObject)
+    {
+        Renderer renderer = playerObject.GetComponent<Renderer>();
+        Color newColor = new Color(Random.value, Random.value, Random.value, 1.0f);
+        renderer.material.color = newColor;
     }
 
     /// <summary>
