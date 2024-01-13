@@ -35,60 +35,39 @@ public class Player_Manager : MonoBehaviour
     }
 
     /// <summary>
-    /// Creates and adds a new player <c>GameObject</c> to the world and the <c>Player_Manager</c>.
+    /// Creates, initializes, and adds a new Player <c>GameObject</c> to the world.
     /// </summary>
     public void AddNewPlayer()
     {
         GameObject playerInstance = HandleNewPlayerInstance();
-        Player playerScript = HandlePlayerLists(playerInstance);
-        playerScript.statsbox = uiManager.AddStatsbox();
-        UpdatePlayersFollowStatus();
-        uiManager.AddButton(playerScript);
+        InitializePlayer(playerInstance);
     }
 
     /// <summary>
-    /// Adds an existing player <c>GameObject</c> to the <c>Player_Manager</c>.
+    /// Initializes <c>Player's</c> internal variables as well as handles the given <c>Player's</c> references in <c>Player_Manager</c> and other scripts.
     /// </summary>
-    private void AddExistingPlayer(GameObject playerObject)
+    private void InitializePlayer(GameObject playerObject)
     {
-        ChangePlayerColor(playerObject);
-        playerObject.name = MakePlayerName();
-
         Player playerScript = HandlePlayerLists(playerObject);
-        playerScript.statsbox = uiManager.AddStatsbox();
-        UpdatePlayersFollowStatus();
+        playerScript.Init(uiManager.AddStatsbox(), MakePlayerName());
         uiManager.AddButton(playerScript);
     }
 
     /// <summary>
-    /// Creates a new player instance and initializes its variables.
+    /// Creates a new player instance and initializes it.
     /// </summary>
     private GameObject HandleNewPlayerInstance()
     {
         GameObject playerInstance = Instantiate(playerPrefab);
-        ChangePlayerColor(playerInstance);
-
-        playerInstance.name = MakePlayerName();
         playerInstance.transform.parent = gameObject.transform;
 
         return playerInstance;
     }
 
     /// <summary>
-    /// Changes the given <c>GameObjects's</c> <c>Renderer's color</c> to a random value.
-    /// </summary>
-    private void ChangePlayerColor(GameObject playerObject)
-    {
-        Renderer renderer = playerObject.GetComponent<Renderer>();
-        Color newColor = new Color(Random.value, Random.value, Random.value, 1.0f);
-        renderer.material.color = newColor;
-    }
-
-    /// <summary>
     /// Returns a new player name.<br/>
     /// Made as a seperate method to make sure every part of the code uses the same naming convention.
     /// </summary>
-    /// <returns></returns>
     private string MakePlayerName()
     {
         return "Player " + (playerOrder.Count + 1);
@@ -103,6 +82,7 @@ public class Player_Manager : MonoBehaviour
         Player playerScript = playerInstance.GetComponent<Player>();
         playerOrder.Add(playerScript);
         playerList.Add(playerScript);
+        UpdatePlayersFollowStatus();
 
         //If the current player is the first one then make them the leader and change their destination to their location.
         if (playerList.Count == 1)
@@ -110,13 +90,15 @@ public class Player_Manager : MonoBehaviour
             uiManager.ChangeSelectedPlayer(playerScript);
             playerScript.destinationVector = playerScript.transform.position;
         }
+
+
         return playerScript;
     }
 
 
     /// <summary>
     /// This method changes the playerOrder in such a way, that the leader gets moved to index 0 while preserving an intuitive order for the rest of the players.<br/>
-    /// If in <c>0 1 2 3 4</c> you make <c>2</c> the new leader then the order will become <c>2 3 4 0 1</c>
+    /// If in <c>0 1 2 3 4</c> you make <c>2</c> the new leader then the order will become <c>2 3 4 1 0</c>
     /// </summary>
     private void ChangePlayerOrder(Player leader)
     {
@@ -170,10 +152,9 @@ public class Player_Manager : MonoBehaviour
         {
             GameObject possiblePlayerObject = gameObject.transform.GetChild(i).gameObject;
             if (possiblePlayerObject.GetComponent<Player>() != null)
-                AddExistingPlayer(possiblePlayerObject);
+                InitializePlayer(possiblePlayerObject);
         }
     }
-
 
     void Start()
     {

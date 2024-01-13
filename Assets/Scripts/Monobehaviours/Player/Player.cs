@@ -3,12 +3,13 @@ using UnityEngine.AI;
 
 public class Player : MonoBehaviour
 {
-    [HideInInspector] int speed, agility, resistance;
     [HideInInspector] public bool isFollowing;
-    [HideInInspector] public Player followingPlayer;
     [HideInInspector] public Vector3 destinationVector;
-    [HideInInspector] public UI_Statsbox statsbox;
+    [HideInInspector] public Player followingPlayer;
 
+    int speed, agility, resistance;
+
+    UI_Statsbox statsbox;
     NavMeshAgent agent;
 
     /// <summary>
@@ -35,10 +36,9 @@ public class Player : MonoBehaviour
     {
         statsbox.gameObject.transform.position = mousePosition;
     }
-    
+
     /// <summary>
-    /// Temporary method<br/>
-    /// Moves the player's <c>gameObject</c> to his <c>destinationVector</c>.
+    /// Changes Unity AI's destination to <c>Player's</c> destination vector.
     /// </summary>
     private void Move()
     {
@@ -57,11 +57,32 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets the given values inside the <c>Player</c> (basically a constructor).
+    /// </summary>
+    public void Init(UI_Statsbox statsbox, string name)
+    {
+        gameObject.name = name;
+        this.statsbox = statsbox;
+    }
+
+    /// <summary>
+    /// Changes the current <c>GameObject's</c> <c>Renderer's</c> color to a random value.
+    /// </summary>
+    private void ChangePlayerColor()
+    {
+        Renderer renderer = gameObject.GetComponent<Renderer>();
+        Color newColor = new Color(Random.value, Random.value, Random.value, 1.0f);
+        renderer.material.color = newColor;
+    }
+
     void Start()
     {
         speed = Random.Range(1, 100);
         agility = Random.Range(1, 100);
         resistance = Random.Range(1, 100);
+
+        ChangePlayerColor();
 
         agent = gameObject.GetComponent<NavMeshAgent>();
     }
