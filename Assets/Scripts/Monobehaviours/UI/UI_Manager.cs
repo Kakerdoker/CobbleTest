@@ -9,7 +9,10 @@ public class UI_Manager : MonoBehaviour
     [Header("Miscellaneous References")]
     [SerializeField] GameObject canvas;
     [SerializeField] RectTransform canvasTransform;
+    [SerializeField] GameObject statsboxHolder;
+    [SerializeField] GameObject buttonBoxHolder;
     [SerializeField] Button_Box_ScriptableObject buttonBox;
+
 
     [Header("Prefab References")]
     [SerializeField] GameObject buttonPrefab;
@@ -104,7 +107,7 @@ public class UI_Manager : MonoBehaviour
     {
         GameObject statsboxObject = Instantiate(statsboxPrefab);
 
-        statsboxObject.transform.parent = canvasTransform;
+        statsboxObject.transform.parent = statsboxHolder.transform;
 
         UI_Statsbox statsboxScript = statsboxObject.GetComponent<UI_Statsbox>();
         statsboxList.Add(statsboxScript);
@@ -121,7 +124,7 @@ public class UI_Manager : MonoBehaviour
         GameObject buttonInstance = Instantiate(buttonPrefab);
 
         buttonInstance.name = "Button - " + playerScript.name;
-        buttonInstance.transform.parent = canvas.transform;
+        buttonInstance.transform.parent = buttonBoxHolder.transform;
 
         UI_Button buttonScript = buttonInstance.GetComponent<UI_Button>();
         buttonScript.Init(playerScript);

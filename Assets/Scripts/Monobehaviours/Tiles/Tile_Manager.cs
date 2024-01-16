@@ -88,6 +88,7 @@ public class Tile_Manager : MonoBehaviour
         tileObject.transform.localScale = new Vector3(1, 1, 1) * size;
         tileObject.name = "Tile " + coordinates.q + "," + coordinates.r;
         tileObject.transform.position = coordinates.ToWorldspace(tileScale) + wordlspaceCenterOffset;
+        tileObject.transform.parent = gameObject.transform;
 
         return tileObject;
     }

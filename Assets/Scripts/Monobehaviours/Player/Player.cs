@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
 
         if (positionDiff.magnitude > 0.1f)
         {
-            float speedModifier = 10f;
+            float speedModifier = 4f;
             Vector3 movementVector = positionDiff.normalized * Time.deltaTime * speedModifier;
             gameObject.transform.position += movementVector;
         }
@@ -75,6 +75,7 @@ public class Player : MonoBehaviour
 
         gameObject.name = name;
         this.statsbox = statsbox;
+        statsbox.SetName(name);
     }
 
     /// <summary>

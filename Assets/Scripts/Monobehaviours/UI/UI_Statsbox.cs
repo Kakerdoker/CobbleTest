@@ -22,6 +22,14 @@ public class UI_Statsbox : MonoBehaviour
     }
 
     /// <summary>
+    /// Sets statsboxes name.
+    /// </summary>
+    public void SetName(string name)
+    {
+        gameObject.name = "Statsbox (" + name + ")";
+    }
+
+    /// <summary>
     /// Updates all of the text inside <c>Statsbox</c> with the stats given as arguments.
     /// </summary>
     public void UpdateBox(int speed, int agility, int resistance, string playerName)
