@@ -72,17 +72,18 @@ public class Input_Manager : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns true if a raycast from the camera to the cursor hit a floor. Stores the position in the given parameter.
+    /// Returns true if a raycast from the camera to the cursor hit a tile. Passes the hit <c>GameObject</c>'s <c>Tile</c> script in the given argument.
     /// </summary>
-    private bool GetFloorHitPositionFromCamera(out Vector3 position)
+    private bool GetTileHitFromCamera(out Tile tile)
     {
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray.origin, ray.direction, out RaycastHit hit, 500f, floor))
         {
-            position = hit.point;
-            return true;
+            tile = hit.transform.gameObject?.GetComponent<Tile>();
+            if (tile != null)
+                return true;
         }
-        position = new Vector3(0, 0, 0);
+        tile = null;
         return false;
     }
 
@@ -91,8 +92,8 @@ public class Input_Manager : MonoBehaviour
     /// </summary>
     private void MovePlayersOnFloorHit()
     {
-        if (GetFloorHitPositionFromCamera(out Vector3 floorClick) && !GetUIHit())
-            playerManager.MovePlayers(floorClick);
+        if (GetTileHitFromCamera(out Tile tile) && !GetUIHit())
+            playerManager.MovePlayers(tile);
     }
     
     void Update()

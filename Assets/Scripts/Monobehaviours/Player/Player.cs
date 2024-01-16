@@ -1,16 +1,18 @@
 using UnityEngine;
-using UnityEngine.AI;
+using System.Collections.Generic;
 
 public class Player : MonoBehaviour
 {
-    [HideInInspector] public bool isFollowing;
-    [HideInInspector] public Vector3 destinationVector;
-    [HideInInspector] public Player followingPlayer;
+    /// <summary>A list containing the path of the <c>Player</c> with <c>Tile</c> 0 being the first destination.</summary>
+    public List<Tile> tilePath;
+    /// <summary>The <c>Tile</c> that the <c>Player</c> is currently moving towards or standing on.</summary>
+    public Tile occupiedTile;
 
+    /// <summary>Stat of the <c>Player</c></summary>
     int speed, agility, resistance;
 
+    /// <summary><c>Statsbox</c> containing information about the current <c>Player</c>.</summary>
     UI_Statsbox statsbox;
-    NavMeshAgent agent;
 
     /// <summary>
     /// Disables the <c>Player</c>'s <c>statsbox</c>.
@@ -38,30 +40,39 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
-    /// Changes Unity AI's destination to <c>Player's</c> destination vector.
+    /// Moves towards the first <c>Tile</c> in <c>tilePath</c>. Once it reaches it, the <c>Tile</c> gets removed from the list and <c>Player</c> can start moving towards the next one.
     /// </summary>
     private void Move()
     {
-        agent.destination = destinationVector;
-    }
+        if (tilePath == null || tilePath.Count == 0 || tilePath[0] == null)
+            return;
 
-    /// <summary>
-    /// Sets the variables to follow their <c>followingPlayer</c>.
-    /// </summary>
-    private void SetDestination()
-    {
-        if (isFollowing && followingPlayer != null)
+        Vector3 destinationPosition = tilePath[0].gameObject.transform.position;
+        Vector3 positionDiff = destinationPosition - gameObject.transform.position;
+        positionDiff.y = 0;
+
+        if (positionDiff.magnitude > 0.1f)
         {
-            destinationVector = followingPlayer.transform.position;
-            agent.stoppingDistance = followingPlayer.transform.localScale.x+0.5f;//Make the stopping distance the size of their followee + some margin.
+            float speedModifier = 10f;
+            Vector3 movementVector = positionDiff.normalized * Time.deltaTime * speedModifier;
+            gameObject.transform.position += movementVector;
         }
-    }
+        else
+        {
+            tilePath.RemoveAt(0);
+        }
+    } 
 
     /// <summary>
     /// Sets the given values inside the <c>Player</c> (basically a constructor).
     /// </summary>
-    public void Init(UI_Statsbox statsbox, string name)
+    public void Init(UI_Statsbox statsbox, string name, Vector3 position)
     {
+        //Push the gameObject up by 0.5 of it's scale, so half of the object won't be inside the Tile.
+        Vector3 extraScale = new Vector3(0, gameObject.transform.localScale.y*0.5f, 0);
+
+        gameObject.transform.position = position + extraScale;
+
         gameObject.name = name;
         this.statsbox = statsbox;
     }
@@ -76,6 +87,23 @@ public class Player : MonoBehaviour
         renderer.material.color = newColor;
     }
 
+    /// <summary>
+    /// Sets the given path and updates walkability boolean on affected tiles.
+    /// </summary>
+    public void SetPath(List<Tile> path)
+    {
+        if(path == null)
+            return;
+
+        occupiedTile.walkable = true;
+
+        tilePath = path;
+        if (path.Count > 0)
+            occupiedTile = path[^1];
+
+        occupiedTile.walkable = false;
+    }
+
     void Start()
     {
         speed = Random.Range(1, 100);
@@ -84,12 +112,11 @@ public class Player : MonoBehaviour
 
         ChangePlayerColor();
 
-        agent = gameObject.GetComponent<NavMeshAgent>();
+        tilePath = new List<Tile>();
     }
 
     void Update()
     {
-        SetDestination();
         Move();
     }
 }
